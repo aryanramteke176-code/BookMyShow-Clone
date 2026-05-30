@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>My Bookings</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+  margin:0;
+  font-family:Poppins;
+  background:#0f1014;
+  color:white;
+}
+
+.header{
+  padding:30px;
+  font-size:28px;
+  color:#f84464;
+}
+
+.container{
+  padding:30px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:#171b24;
+  padding:20px;
+  border-radius:15px;
+}
+
+.meta{
+  color:#aaa;
+  font-size:14px;
+  margin:5px 0;
+}
+
+.seats{
+  margin-top:10px;
+  color:#cfd2d9;
+}
+
+button{
+  margin-top:15px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#f84464;
+  color:white;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+.empty{
+  padding:40px;
+  color:#aaa;
+  text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">🎟 My Bookings</div>
+
+<div class="container" id="container"></div>
+
+<script>
+
+const userId = localStorage.getItem("userId");
+
+// 🔐 AUTH CHECK
+if(!userId){
+  window.location.href = "login.html";
+}
+
+async function loadBookings(){
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/bookings/user/${userId}`);
+    const data = await res.json();
+
+    const container = document.getElementById("container");
+    container.innerHTML = "";
+
+    if(!data || data.length === 0){
+      container.innerHTML = `<div class="empty">No bookings found 😢</div>`;
+      return;
+    }
+
+    data.forEach(b => {
+
+      // 🛡 SAFE NULL HANDLING
+      const seats = (b.seats || []).map(s => s.seatNumber).join(", ");
+
+      const movie = b.shows?.movie?.title || "N/A";
+      const screen = b.shows?.screen?.name || "N/A";
+      const date = b.shows?.showDate || "N/A";
+      const time = b.shows?.startTime || "N/A";
+
+      container.innerHTML += `
+        <div class="card">
+          <h3>Booking #${b.id}</h3>
+
+          <div class="meta">🎬 Movie: ${movie}</div>
+          <div class="meta">🏟 Screen: ${screen}</div>
+          <div class="meta">📅 Date: ${date}</div>
+          <div class="meta">⏰ Time: ${time}</div>
+
+          <div class="seats">💺 Seats: ${seats}</div>
+          <div class="meta">💰 Total: ₹${b.totalPrice}</div>
+
+          <div class="meta">Status: ${b.status}</div>
+
+          <button onclick="cancelBooking(${b.id})">
+            Cancel Booking
+          </button>
+        </div>
+      `;
+    });
+
+  } catch(err){
+    console.error("Booking fetch error:", err);
+    document.getElementById("container").innerHTML =
+      `<div class="empty">Failed to load bookings ❌</div>`;
+  }
+}
+
+async function cancelBooking(id){
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/bookings/${id}/cancel`, {
+      method: "PUT"
+    });
+
+    if(res.ok){
+      alert("Booking Cancelled ❌");
+      loadBookings();
+    } else {
+      alert("Failed to cancel booking");
+    }
+
+  } catch(err){
+    console.error(err);
+    alert("Server error");
+  }
+}
+
+loadBookings();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+  margin:0;
+  font-family:Poppins;
+  background:#0f1014;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box{
+  background:#171b24;
+  padding:30px;
+  border-radius:15px;
+  width:320px;
+}
+
+h2{
+  color:#f84464;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:10px;
+  background:#1b1f29;
+  color:white;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#f84464;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Login</h2>
+
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+</div>
+
+<script>
+
+async function login(){
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("http://localhost:8080/api/users/login", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({email,password})
+  });
+
+  if(!res.ok){
+    alert("Invalid credentials ❌");
+    return;
+  }
+
+  const user = await res.json();
+
+  // save user session
+  localStorage.setItem("userId", user.id);
+
+  alert("Login Successful 🎉");
+
+  // ✅ UPDATED REDIRECT
+  window.location.href = "mybookings.html";
+}
+
+</script>
+
+</body>
+</html>

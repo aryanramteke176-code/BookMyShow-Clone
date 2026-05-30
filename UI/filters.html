@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Filters - BookMyShow</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+  margin:0;
+  font-family:Poppins;
+  background:#0f1014;
+  color:white;
+}
+
+/* NAV */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 40px;
+  background:#12141b;
+  position:sticky;
+  top:0;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:700;
+  color:#f84464;
+  cursor:pointer;
+}
+
+/* FILTERS */
+.filters{
+  display:flex;
+  gap:15px;
+}
+
+select{
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#1b1f29;
+  color:white;
+  outline:none;
+}
+
+/* MOVIES */
+.container{
+  padding:40px;
+}
+
+.movie-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+  margin-top:30px;
+}
+
+.movie-card{
+  background:#171b24;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.movie-card:hover{
+  transform:scale(1.03);
+}
+
+.movie-card img{
+  width:100%;
+  height:280px;
+  object-fit:cover;
+}
+
+.movie-info{
+  padding:10px;
+}
+
+.movie-title{
+  font-weight:600;
+}
+
+.meta{
+  color:#aaa;
+  font-size:13px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAV -->
+<div class="navbar">
+
+  <div class="logo" onclick="location.reload()">BookMyShow</div>
+
+  <div class="filters">
+
+    <select id="type">
+      <option value="">Filter Type</option>
+      <option value="genre">Genre</option>
+      <option value="language">Language</option>
+      <option value="city">City</option>
+    </select>
+
+    <select id="value">
+      <option>Select Value</option>
+    </select>
+
+  </div>
+
+</div>
+
+<!-- MOVIES -->
+<div class="container">
+  <h2>Movies</h2>
+  <div class="movie-grid" id="movieGrid"></div>
+</div>
+
+<script>
+
+const type = document.getElementById("type");
+const value = document.getElementById("value");
+const grid = document.getElementById("movieGrid");
+
+let currentType = "";
+
+/* TYPE SELECT */
+type.addEventListener("change", () => {
+
+  currentType = type.value;
+  value.innerHTML = "<option>Select Value</option>";
+
+  if(currentType === "genre"){
+    value.innerHTML += `
+      <option value="action">Action</option>
+      <option value="comedy">Comedy</option>
+      <option value="drama">Drama</option>
+      <option value="horror">Horror</option>
+    `;
+  }
+
+  else if(currentType === "language"){
+    value.innerHTML += `
+      <option value="hindi">Hindi</option>
+      <option value="english">English</option>
+      <option value="telugu">Telugu</option>
+    `;
+  }
+
+  else if(currentType === "city"){
+    value.innerHTML += `
+      <option value="nagpur">Nagpur</option>
+      <option value="mumbai">Mumbai</option>
+      <option value="delhi">Delhi</option>
+    `;
+  }
+});
+
+/* VALUE CHANGE → API CALL */
+value.addEventListener("change", async () => {
+
+  const val = value.value;
+
+  let url = "";
+
+  if(currentType === "genre"){
+    url = `http://localhost:8080/api/movies/genre/${val}`;
+  }
+
+  else if(currentType === "language"){
+    url = `http://localhost:8080/api/movies/language/${val}`;
+  }
+
+  else if(currentType === "city"){
+    url = `http://localhost:8080/api/movies`;
+  }
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  renderMovies(data);
+});
+
+/* RENDER MOVIES */
+function renderMovies(movies){
+
+  grid.innerHTML = "";
+
+  movies.forEach(m => {
+
+    grid.innerHTML += `
+      <div class="movie-card" onclick="openMovie(${m.id})">
+
+        <img src="${m.posterUrl}" />
+
+        <div class="movie-info">
+          <div class="movie-title">${m.title}</div>
+          <div class="meta">${m.genre} • ${m.language}</div>
+          <div class="meta">⭐ ${m.rating}/10</div>
+        </div>
+
+      </div>
+    `;
+  });
+}
+
+/* OPEN DETAILS */
+function openMovie(id){
+  window.location.href = `movie-details.html?id=${id}`;
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:#0f1014;
+  color:white;
+  display:flex;
+  overflow-x:hidden;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  height:100vh;
+  background:#12141b;
+  border-right:1px solid rgba(255,255,255,0.06);
+  padding:20px;
+  position:fixed;
+}
+
+.sidebar h2{
+  color:#f84464;
+  margin-bottom:30px;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.menu button{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#1b1f29;
+  color:#cfd2d9;
+  cursor:pointer;
+  text-align:left;
+  transition:0.2s;
+}
+
+.menu button:hover{
+  background:#2a2f3d;
+  color:white;
+}
+
+.menu button.active{
+  background:#f84464;
+  color:white;
+}
+
+/* MAIN */
+.main{
+  margin-left:260px;
+  width:calc(100% - 260px);
+  padding:40px;
+  box-sizing:border-box;
+}
+
+/* HEADER */
+.header{
+  font-size:28px;
+  margin-bottom:20px;
+}
+
+/* FORM BOX */
+.form-box{
+  background:#171b24;
+  padding:25px;
+  border-radius:15px;
+  max-width:600px;
+  width:100%;
+  box-sizing:border-box;
+}
+
+.form-box input,
+.form-box select{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border:none;
+  border-radius:10px;
+  background:#1b1f29;
+  color:white;
+  outline:none;
+}
+
+.form-box button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#f84464;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+/* SECTION */
+.section{
+  display:none;
+}
+
+.section.active{
+  display:block;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+  <h2>Admin Panel</h2>
+
+  <div class="menu">
+    <button onclick="showSection('city')" class="active">Add City</button>
+    <button onclick="showSection('theatre')">Add Theatre</button>
+    <button onclick="showSection('screen')">Add Screen</button>
+    <button onclick="showSection('seat')">Add Seats</button>
+    <button onclick="showSection('movie')">Add Movie</button>
+    <button onclick="showSection('show')">Add Show</button>
+  </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- CITY -->
+<div id="city" class="section active">
+  <div class="header">Add City</div>
+  <div class="form-box">
+    <input placeholder="City Name" id="cityName">
+    <button onclick="addCity()">Add City</button>
+  </div>
+</div>
+
+<!-- THEATRE -->
+<div id="theatre" class="section">
+  <div class="header">Add Theatre</div>
+  <div class="form-box">
+    <input placeholder="Theatre Name" id="theatreName">
+    <input placeholder="Address" id="address">
+    <input placeholder="City ID" id="cityId" type="number">
+    <button onclick="addTheatre()">Add Theatre</button>
+  </div>
+</div>
+
+<!-- SCREEN -->
+<div id="screen" class="section">
+  <div class="header">Add Screen</div>
+  <div class="form-box">
+    <input placeholder="Screen Name" id="screenName">
+    <input placeholder="Theatre ID" id="theatreId">
+    <button onclick="addScreen()">Add Screen</button>
+  </div>
+</div>
+
+<!-- SEATS -->
+<div id="seat" class="section">
+  <div class="header">Add Seats</div>
+
+  <div class="form-box">
+
+    <input placeholder="Screen ID" id="screenId" type="number">
+
+    <button type="button" onclick="generateSeats()" style="background:#2a2f3d;">
+      Auto Generate Seats (A–J, 1–10)
+    </button>
+
+    <hr style="margin:15px 0; border:1px solid #2a2f3d;">
+
+    <input placeholder="Row" id="row">
+    <input placeholder="Column" id="col">
+    <input placeholder="Seat Number" id="seatNumber">
+
+    <select id="seatType">
+      <option value="REGULAR">REGULAR</option>
+      <option value="PREMIUM">PREMIUM</option>
+      <option value="VIP">VIP</option>
+    </select>
+
+    <button onclick="addSeat()">Add Seat Manually</button>
+
+  </div>
+</div>
+
+<!-- MOVIE -->
+<div id="movie" class="section">
+  <div class="header">Add Movie</div>
+
+  <div class="form-box">
+
+    <input placeholder="Movie Title" id="title">
+    <input placeholder="Genre" id="genre">
+    <input placeholder="Language" id="language">
+    <input placeholder="Duration" id="durationMinutes">
+    <input placeholder="Rating" id="rating">
+    <input placeholder="Release Date" id="releaseDate">
+    <input placeholder="Poster URL" id="posterUrl">
+    <input placeholder="Description" id="description">
+
+    <button onclick="addMovie()">Add Movie</button>
+
+  </div>
+</div>
+
+<!-- SHOW -->
+<div id="show" class="section">
+  <div class="header">Add Show</div>
+
+  <div class="form-box">
+
+    <input placeholder="Movie ID" id="movieId">
+    <input placeholder="Screen ID" id="screenIdShow">
+    <input type="date" id="showDate">
+    <input type="time" id="startTime">
+    <input type="time" id="endTime">
+    <input placeholder="Ticket Price" id="ticketPrice">
+
+    <button onclick="addShow()">Add Show</button>
+
+  </div>
+</div>
+
+</div>
+
+<script>
+
+/* NAV */
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+/* CITY */
+async function addCity(){
+  await fetch("http://localhost:8080/api/cities",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name:document.getElementById("cityName").value})
+  });
+  alert("City Added");
+  location.reload();
+}
+
+/* THEATRE */
+async function addTheatre(){
+  await fetch("http://localhost:8080/api/theatres",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      name:document.getElementById("theatreName").value,
+      address:document.getElementById("address").value,
+      cityId:document.getElementById("cityId").value
+    })
+  });
+  alert("Theatre Added");
+  location.reload();
+}
+
+/* SCREEN */
+async function addScreen(){
+  await fetch("http://localhost:8080/api/screens",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      name:document.getElementById("screenName").value,
+      theatreId:document.getElementById("theatreId").value
+    })
+  });
+  alert("Screen Added");
+  location.reload();
+}
+
+/* SEATS AUTO */
+async function generateSeats(){
+
+  const screenId=document.getElementById("screenId").value;
+
+  const rows="ABCDEFGHIJ";
+
+  for(let i=0;i<rows.length;i++){
+    for(let j=1;j<=10;j++){
+
+      await fetch("http://localhost:8080/api/seats",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          seatNumber:rows[i]+j,
+          row:rows[i],
+          col:j,
+          seatType:"REGULAR",
+          screenId:screenId
+        })
+      });
+    }
+  }
+
+  alert("Seats Generated");
+}
+
+/* SEAT MANUAL */
+async function addSeat(){
+  await fetch("http://localhost:8080/api/seats",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      seatNumber:document.getElementById("seatNumber").value,
+      row:document.getElementById("row").value,
+      col:document.getElementById("col").value,
+      seatType:document.getElementById("seatType").value,
+      screenId:document.getElementById("screenId").value
+    })
+  });
+  alert("Seat Added");
+}
+
+/* MOVIE */
+async function addMovie(){
+  await fetch("http://localhost:8080/api/movies",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      title:document.getElementById("title").value,
+      genre:document.getElementById("genre").value,
+      language:document.getElementById("language").value,
+      durationMinutes:document.getElementById("durationMinutes").value,
+      rating:document.getElementById("rating").value,
+      releaseDate:document.getElementById("releaseDate").value,
+      posterUrl:document.getElementById("posterUrl").value,
+      description:document.getElementById("description").value
+    })
+  });
+  alert("Movie Added");
+}
+
+/* SHOW */
+async function addShow(){
+  await fetch("http://localhost:8080/api/shows",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      movieId:document.getElementById("movieId").value,
+      screenId:document.getElementById("screenIdShow").value,
+      showDate:document.getElementById("showDate").value,
+      startTime:document.getElementById("startTime").value,
+      endTime:document.getElementById("endTime").value,
+      ticketPrice:document.getElementById("ticketPrice").value
+    })
+  });
+  alert("Show Added");
+}
+
+</script>
+
+</body>
+</html>

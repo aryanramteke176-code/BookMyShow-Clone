@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Search Movies</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  background:#0f1014;
+  color:white;
+  font-family:Poppins;
+  padding:40px;
+}
+
+.movie-card {
+  background:#171b24;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.movie-card:hover{
+  transform: scale(1.02);
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Search Results</h1>
+<div id="results"></div>
+
+<script>
+
+const resultsDiv = document.getElementById("results");
+
+// GET SEARCH QUERY
+const params = new URLSearchParams(window.location.search);
+const title = params.get("title");
+
+async function searchMovies() {
+
+  try {
+    const res = await fetch(
+      `http://localhost:8080/api/movies/search?title=${title}`
+    );
+
+    const movies = await res.json();
+
+    if (!movies || movies.length === 0) {
+      resultsDiv.innerHTML = "<h3>No movies found 😢</h3>";
+      return;
+    }
+
+    resultsDiv.innerHTML = "";
+
+    movies.forEach(movie => {
+      resultsDiv.innerHTML += `
+        <div class="movie-card" onclick="openMovie(${movie.id})">
+          <h2>${movie.title}</h2>
+          <p>${movie.genre} • ${movie.language}</p>
+          <p>⭐ ${movie.rating}</p>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function openMovie(id){
+  window.location.href = "movie-details.html?id=" + id;
+}
+
+searchMovies();
+
+</script>
+
+</body>
+</html>

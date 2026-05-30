@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - BookMyShow</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: #0f1014;
+  color: white;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 360px;
+  background: #171b24;
+  padding: 40px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  background: #0f131b;
+  color: white;
+}
+
+.input:focus {
+  border: 1px solid #f84464;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f84464, #ff5f7a);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.03);
+}
+
+.text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 13px;
+  color: #aaa;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Login</h2>
+
+  <input type="email" id="email" class="input" placeholder="Email">
+
+  <input type="password" id="password" class="input" placeholder="Password">
+
+  <button class="btn" onclick="login()">Login</button>
+
+  <div class="text">
+    Login to book your movie tickets 🎬
+  </div>
+
+</div>
+
+<script>
+
+async function login() {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  try {
+
+    const response = await fetch("http://localhost:8080/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      alert("Invalid login ❌");
+      return;
+    }
+
+    const user = await response.json();
+
+    // 💾 SAVE USER SESSION
+    localStorage.setItem("userId", user.id);
+
+    // 🎯 GET REDIRECT INFO
+    const params = new URLSearchParams(window.location.search);
+
+    const showId = params.get("showId");
+    const redirect = params.get("redirect");
+
+    // 🚀 SMART REDIRECT LOGIC
+    if (redirect === "seat" && showId) {
+
+      window.location.href =
+        "seat-selection.html?showId=" + showId;
+
+    } else {
+
+      window.location.href = "homepage.html";
+
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Server error ❌");
+  }
+}
+
+</script>
+
+</body>
+</html>

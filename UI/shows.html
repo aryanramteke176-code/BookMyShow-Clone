@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shows</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+
+    body{
+      margin:0;
+      font-family:'Poppins',sans-serif;
+      background:#0f1014;
+      color:white;
+    }
+
+    /* NAV */
+    .navbar{
+      padding:20px 40px;
+      background:#12141b;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .logo{
+      color:#f84464;
+      font-size:24px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .container{
+      padding:40px;
+    }
+
+    .title{
+      font-size:28px;
+      margin-bottom:20px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:#171b24;
+      padding:20px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.05);
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-5px);
+      box-shadow:0 10px 25px rgba(248,68,100,0.2);
+    }
+
+    .screen{
+      font-size:18px;
+      font-weight:600;
+      margin-bottom:10px;
+    }
+
+    .meta{
+      font-size:14px;
+      color:#aaa;
+      margin-bottom:10px;
+    }
+
+    .book-btn{
+      padding:10px 14px;
+      border:none;
+      border-radius:10px;
+      background:#f84464;
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+      width:100%;
+      transition:0.2s;
+    }
+
+    .book-btn:hover{
+      background:#ff5a75;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <div class="navbar">
+    <div class="logo" onclick="goHome()">BookMyShow</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="container">
+    <div class="title">Available Shows</div>
+    <div class="grid" id="showGrid"></div>
+  </div>
+
+  <script>
+
+    const grid = document.getElementById("showGrid");
+
+    const screenId = new URLSearchParams(window.location.search).get("screenId");
+
+    let allShows = [];
+
+    /* FETCH SHOWS */
+    async function fetchShows(){
+      try{
+        const res = await fetch(`http://localhost:8080/api/shows/screen/${screenId}`);
+        allShows = await res.json();
+        render(allShows);
+      }catch(err){
+        console.error(err);
+      }
+    }
+
+    /* RENDER SHOWS */
+    function render(data){
+
+      grid.innerHTML = "";
+
+      if(!data || data.length === 0){
+        grid.innerHTML = "<p>No shows available 😢</p>";
+        return;
+      }
+
+      data.forEach(show => {
+
+        grid.innerHTML += `
+          <div class="card">
+            <div class="screen">${show.screen?.name || "Screen"}</div>
+
+            <div class="meta">
+              📅 ${show.showDate} <br/>
+              ⏰ ${show.startTime}
+            </div>
+
+            <button class="book-btn" onclick="bookShow(${show.id})">
+              Book Now
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    /* BOOK FLOW */
+    function bookShow(showId){
+      window.location.href = `movie-details.html?showId=${showId}`;
+    }
+
+    function goHome(){
+      window.location.href = "index.html";
+    }
+
+    fetchShows();
+
+  </script>
+
+</body>
+</html>

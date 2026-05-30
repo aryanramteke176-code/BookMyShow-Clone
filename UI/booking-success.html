@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Confirmed</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: Poppins;
+  background: #0f1014;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  width: 420px;
+  background: #171b24;
+  padding: 30px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+
+.success {
+  text-align: center;
+  font-size: 26px;
+  color: #4ade80;
+  margin-bottom: 20px;
+}
+
+.info {
+  line-height: 32px;
+  color: #cfd2d9;
+  font-size: 15px;
+}
+
+.label {
+  color: #8f95a3;
+}
+
+.seats {
+  color: #f84464;
+  font-weight: 600;
+}
+
+.btn {
+  margin-top: 25px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f84464, #ff5f7a);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="success">🎉 Booking Confirmed</div>
+
+  <div id="details" class="info">Loading ticket...</div>
+
+  <button class="btn" onclick="goHome()">Go to Home</button>
+
+</div>
+
+<script>
+
+const bookingId = localStorage.getItem("lastBookingId");
+
+async function loadTicket() {
+
+  if (!bookingId) {
+    document.getElementById("details").innerHTML =
+      "No booking found.";
+    return;
+  }
+
+  try {
+
+    const res = await fetch(
+      "http://localhost:8080/api/bookings/" + bookingId
+    );
+
+    const booking = await res.json();
+
+    const seats = booking.seats
+      .map(s => s.seatNumber)
+      .join(", ");
+
+    document.getElementById("details").innerHTML = `
+
+      <div><span class="label">Booking ID:</span> ${booking.id}</div>
+      <div><span class="label">Movie:</span> ${booking.show.movie.title}</div>
+      <div><span class="label">Theatre:</span> ${booking.show.screen.theatre.name}</div>
+      <div><span class="label">Show Time:</span> ${booking.show.startTime}</div>
+      <div><span class="label">Seats:</span> <span class="seats">${seats}</span></div>
+      <div><span class="label">Status:</span> ${booking.status}</div>
+
+    `;
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("details").innerHTML =
+      "Error loading ticket.";
+  }
+}
+
+function goHome() {
+  window.location.href = "homepage.html";
+}
+
+loadTicket();
+
+</script>
+
+</body>
+</html>

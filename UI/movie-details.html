@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Details</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: Poppins;
+  background: #0f1014;
+  color: white;
+}
+
+.container {
+  padding: 40px;
+}
+
+.movie-box {
+  display: flex;
+  gap: 30px;
+  background: #171b24;
+  padding: 25px;
+  border-radius: 15px;
+}
+
+.movie-box img {
+  width: 250px;
+  border-radius: 10px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.meta {
+  color: #aaa;
+  margin: 10px 0;
+}
+
+.section {
+  margin-top: 40px;
+}
+
+.show-card {
+  background: #1f2430;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 🔥 BUTTON */
+.book-btn {
+  background: linear-gradient(135deg, #f84464, #ff5f7a);
+  padding: 10px 18px;
+  border: none;
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.book-btn:hover {
+  transform: scale(1.05);
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <div id="movieDetails"></div>
+
+  <div class="section">
+    <h2>Available Shows</h2>
+    <div id="shows"></div>
+  </div>
+
+</div>
+
+<script>
+
+const movieId = new URLSearchParams(window.location.search).get("id");
+
+/* 🎬 LOAD MOVIE */
+async function loadMovie() {
+
+  const res = await fetch(`http://localhost:8080/api/movies/${movieId}`);
+  const movie = await res.json();
+
+  document.getElementById("movieDetails").innerHTML = `
+    <div class="movie-box">
+      <img src="${movie.posterUrl}">
+      <div>
+        <div class="title">${movie.title}</div>
+        <div class="meta">${movie.genre} • ${movie.language}</div>
+        <div class="meta">${movie.durationMinutes} mins</div>
+        <p>${movie.description}</p>
+      </div>
+    </div>
+  `;
+}
+
+/* 🎭 LOAD SHOWS */
+async function loadShows() {
+
+  const res = await fetch(`http://localhost:8080/api/shows/movie/${movieId}`);
+  const shows = await res.json();
+
+  const container = document.getElementById("shows");
+  container.innerHTML = "";
+
+  shows.forEach(show => {
+
+    container.innerHTML += `
+      <div class="show-card">
+        <div>
+          <b>${show.screen.name}</b><br>
+          ${show.showDate} | ${show.startTime}
+        </div>
+
+        <button class="book-btn" onclick="bookShow(${show.id})">
+          Book Now
+        </button>
+      </div>
+    `;
+  });
+}
+
+/* 🔐 FIXED LOGIN REDIRECT (MAIN FIX) */
+function bookShow(showId) {
+
+  console.log("Book clicked:", showId);
+
+  // ALWAYS redirect to login first
+  window.location.href =
+    "login.html?redirect=seat&showId=" + showId;
+}
+
+loadMovie();
+loadShows();
+
+</script>
+
+</body>
+</html>
