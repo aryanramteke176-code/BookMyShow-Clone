@@ -1,6 +1,5 @@
-# BookMyShow Clone
-
-A full-stack movie ticket booking application inspired by BookMyShow, built using Java, Spring Boot, MySQL, HTML, CSS, and JavaScript.
+# BookMyShow CloneA 
+full-stack movie ticket booking application inspired by BookMyShow, built using Java, Spring Boot, MySQL, HTML, CSS, and JavaScript, Rest, Jpa frameworks , Spring security.
 
 ## Features
 
